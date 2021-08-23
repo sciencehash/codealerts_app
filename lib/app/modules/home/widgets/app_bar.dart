@@ -18,31 +18,30 @@ class HomeAppBar extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text('Code Alerts'),
+              child: Text(
+                'Code Alerts',
+                style: Get.textTheme.headline5,
               ),
             ),
+            IconButton(
+              icon: Icon(Icons.notifications, size: 19),
+              iconSize: 23,
+              onPressed: () async {
+                await Get.toNamed('/notifications');
+              },
+            ),
             // IconButton(
-            //   icon: Icon(UoliaIcons.notifications, size: 19),
+            //   icon: Icon(Icons.search, size: 19),
             //   iconSize: 23,
             //   onPressed: () {
             //     //
-            //     print("Notifications");
             //   },
             // ),
             IconButton(
-              icon: Icon(Icons.search, size: 19),
+              icon: Icon(Icons.settings, size: 23),
               iconSize: 23,
-              onPressed: () {
-                //
-              },
-            ),
-            IconButton(
-              icon: Icon(Icons.account_circle, size: 23),
-              iconSize: 23,
-              onPressed: () {
-                Get.toNamed('/account');
+              onPressed: () async {
+                await Get.toNamed('/settings');
               },
             ),
           ],

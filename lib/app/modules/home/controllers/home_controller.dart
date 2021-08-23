@@ -1,11 +1,39 @@
+import 'dart:async';
+
+import 'package:codealerts_app/app/data/models/project.dart';
+import 'package:codealerts_app/app/modules/home/repositories/home_repository.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  //TODO: Implement HomeController
+  //
+  // Subscriptions and repositories variables
+  //
 
-  final count = 0.obs;
+  final HomeRepository homeRepository = HomeRepository();
+  StreamSubscription? _projectsSubscription;
+
+  //
+  // Content variables
+  //
+
+  //
+  var isOnInitReady = false.obs;
+
+  //
+  var projects = <Project>[].obs;
+
   @override
-  void onInit() {
+  void onInit() async {
+    //
+    await homeRepository.initProviders(
+      isLocal: true,
+    );
+
+    //
+    await _loadProjects();
+
+    isOnInitReady.value = true;
+
     super.onInit();
   }
 
@@ -15,6 +43,15 @@ class HomeController extends GetxController {
   }
 
   @override
-  void onClose() {}
-  void increment() => count.value++;
+  void onClose() async {
+    await _projectsSubscription?.cancel();
+    super.onClose();
+  }
+
+  Future<void> _loadProjects() async {
+    _projectsSubscription =
+        homeRepository.watchAllProjects().listen((_projects) {
+      projects.value = _projects;
+    });
+  }
 }

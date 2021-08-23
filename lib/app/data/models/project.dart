@@ -4,6 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'project.g.dart';
 
 enum ProjectSource {
+  custom_web,
   github_com,
   pub_dev,
   npmjs_com,

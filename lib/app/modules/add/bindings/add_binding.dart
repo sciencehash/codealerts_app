@@ -7,6 +7,7 @@ class AddBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<AddController>(
       () => AddController(),
+      tag: 'add',
     );
   }
 }

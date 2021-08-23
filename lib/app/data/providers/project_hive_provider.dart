@@ -25,10 +25,36 @@ class ProjectHiveProvider extends ProjectService {
   }
 
   ///
+  Stream<Project?> watchById(String id) async* {
+    var firstValue = _hiveBox.get(id);
+
+    if (firstValue != null) {
+      //
+      yield Project.fromHiveEntry(
+        id,
+        Map<String, dynamic>.from(
+          firstValue,
+        ),
+      );
+    } else {
+      yield null;
+    }
+    //
+    yield* _hiveBox.watch(key: id).map((event) {
+      return event.value != null
+          ? Project.fromHiveEntry(
+              event.key,
+              Map<String, dynamic>.from(event.value),
+            )
+          : null;
+    });
+  }
+
+  ///
   Future<List<Project>> all() async {
     List<Project> projects = [];
-    final keys = List<String>.from(_hiveBox.keys);
-    for (String key in keys) {
+    final keys = List<int>.from(_hiveBox.keys);
+    for (int key in keys) {
       var value = await _hiveBox.get(key);
       projects.add(
         Project.fromHiveEntry(
@@ -38,6 +64,32 @@ class ProjectHiveProvider extends ProjectService {
       );
     }
     return projects;
+  }
+
+  ///
+  Stream<List<Project>> watchAll() async* {
+    List<Project> _getAllSync() {
+      List<Project> projects = [];
+      final keys = List<int>.from(_hiveBox.keys);
+      for (int key in keys) {
+        var value = _hiveBox.get(key);
+        projects.add(
+          Project.fromHiveEntry(
+            key.toString(),
+            Map<String, dynamic>.from(value),
+          ),
+        );
+      }
+      return projects;
+    }
+
+    // First broadcast
+    yield _getAllSync();
+
+    //
+    yield* _hiveBox.watch().map((BoxEvent event) {
+      return _getAllSync();
+    });
   }
 
   ///
